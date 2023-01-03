@@ -70,6 +70,12 @@
             <version>2.1.1</version>
         </dependency>
         <dependency>
+            <groupId>com.google.auth</groupId>
+            <artifactId>google-auth-library-oauth2-http</artifactId>
+            <version>1.14.0</version>
+        </dependency>
+
+        <dependency>
             <groupId>com.google.apis</groupId>
             <artifactId>google-api-services-gmail</artifactId>
             <version>v1-rev20221219-2.0.0</version>

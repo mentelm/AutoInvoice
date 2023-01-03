@@ -19,7 +19,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class DriveService {
 
-    public static final String MIME_TYPE_FOLDER = "application/vnd.google-apps.folder";
+    private static final String MIME_TYPE_FOLDER = "application/vnd.google-apps.folder";
     private final Drive drive;
 
     @SneakyThrows
@@ -39,16 +39,16 @@ public class DriveService {
     @SneakyThrows
     public File createFile(File folder, BinaryData data) {
         File fileMetadata = new File();
-        fileMetadata.setName(data.getFilename());
+        fileMetadata.setName(data.filename());
         fileMetadata.setParents(List.of(folder.getId()));
-        InputStreamContent mediaContent = new InputStreamContent(data.getType(), new ByteArrayInputStream(data.getContent()));
+        InputStreamContent mediaContent = new InputStreamContent(data.type(), new ByteArrayInputStream(data.content()));
 
         File file = drive.files().create(fileMetadata, mediaContent)
                 .setFields("id, parents")
                 .execute();
 
         SummaryContextHolder.incrementAttachments();
-        log.info("File {} uploaded {}", data.getFilename(), file.getId());
+        log.info("File {} uploaded {}", data.filename(), file.getId());
         return file;
     }
 

@@ -17,13 +17,14 @@ import pl.mentelm.autoinvoice.configuration.AutoInvoiceConfigurationProperties;
 import pl.mentelm.autoinvoice.summary.SummaryContextHolder;
 
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Properties;
 import java.util.stream.Stream;
+
+import static jakarta.mail.internet.MimeMessage.RecipientType.TO;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -36,41 +37,34 @@ public class GmailService {
     private final Gmail gmail;
     private final AutoInvoiceConfigurationProperties properties;
 
+    @SneakyThrows
     public List<Message> getMessagesForLabel(String label, LocalDate from, LocalDate to) {
         String formattedFrom = FORMATTER.format(from); // inclusive
         String formattedTo = FORMATTER.format(to); // exclusive
         String filter = FILTER_PATTERN.formatted(label, formattedFrom, formattedTo);
 
-        try {
-            List<Message> messages = gmail.users().messages()
-                    .list(properties.getUserId())
-                    .setQ(filter)
-                    .execute()
-                    .getMessages();
+        List<Message> messages = gmail.users().messages()
+                .list(properties.getUserId())
+                .setQ(filter)
+                .execute()
+                .getMessages();
 
-            SummaryContextHolder.setMessageCount(messages.size());
-            log.info("Found {} messages with label {} between {} and {}",
-                    messages.size(), label, formattedFrom, formattedTo);
+        SummaryContextHolder.setMessageCount(messages.size());
+        log.info("Found {} messages with label {} between {} and {}",
+                messages.size(), label, formattedFrom, formattedTo);
 
-            return messages;
-        } catch (IOException e) {
-            throw new RuntimeException("Could not fetch messages", e);
-        }
+        return messages;
     }
 
     @SneakyThrows
-    public Stream<BinaryData> getAttachments(Message _message) {
-        Message message = gmail.users().messages().get(properties.getUserId(), _message.getId()).execute();
+    public Stream<BinaryData> getAttachments(Message sourceMessage) {
+        Message message = gmail.users().messages().get(properties.getUserId(), sourceMessage.getId()).execute();
 
         if (message.getPayload().getBody().getSize() > 0) {
-            // do your work with:
             MessagePartBody body = message.getPayload().getBody();
-//            new Attachment(body.getAttachmentId(), body.getSize(), body.decodeData());
-
             log.warn("BODY (not-implemented) {} (size {}): {}", body.getAttachmentId(), body.getSize(), body.getData());
             return Stream.empty();
         }
-
 
         // multipart
         List<MessagePart> parts = message.getPayload().getParts();
@@ -97,8 +91,8 @@ public class GmailService {
 
     private String getFilename(MessagePart part) {
         return part.getFilename()
-                .replaceAll("/", "-")
-                .replaceAll(" ", "_");
+                .replace("/", "-")
+                .replace(" ", "_");
     }
 
     @SneakyThrows
@@ -127,8 +121,8 @@ public class GmailService {
 
         MimeMessage email = new MimeMessage(session);
 
-        email.setFrom(new InternetAddress("no-reply@mentelm.pl"));
-        email.addRecipient(MimeMessage.RecipientType.TO, new InternetAddress(properties.getTargetEmail()));
+        email.setFrom("no-reply@mentelm.pl");
+        email.addRecipient(TO, new InternetAddress(properties.getTargetEmail()));
         email.setSubject(subject);
         email.setText(body, StandardCharsets.UTF_8.name(), "html");
         return email;

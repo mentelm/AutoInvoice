@@ -51,11 +51,11 @@ public class AutoInvoiceApplication {
         SummaryContextHolder.get().setStartDate(startOfPreviousMonth);
         SummaryContextHolder.get().setEndDate(startOfCurrentMonth);
 
-        File dir_month = getOrCreateFolderForMonth(startOfPreviousMonth);
-        getAndUploadInvoices(startOfPreviousMonth, startOfCurrentMonth, dir_month);
-        driveService.setShared(dir_month);
+        File dirMonth = getOrCreateFolderForMonth(startOfPreviousMonth);
+        getAndUploadInvoices(startOfPreviousMonth, startOfCurrentMonth, dirMonth);
+        driveService.setShared(dirMonth);
 
-        renderAndSendEmail(startOfPreviousMonth, dir_month);
+        renderAndSendEmail(startOfPreviousMonth, dirMonth);
     }
 
     private void renderAndSendEmail(LocalDate startOfPreviousMonth, File sharedFolder) {
@@ -70,13 +70,13 @@ public class AutoInvoiceApplication {
     private File getOrCreateFolderForMonth(LocalDate date) {
         String year = YEAR_FORMATTER.format(date);
         String month = MONTH_FORMATTER.format(date);
-        File dir_invoices = driveService.findOrCreateFolder(properties.getBaseFolderName());
-        File dir_year = driveService.findOrCreateFolder(year, dir_invoices);
-        File dir_month = driveService.findOrCreateFolder(month, dir_year);
+        File dirInvoices = driveService.findOrCreateFolder(properties.getBaseFolderName());
+        File dirYear = driveService.findOrCreateFolder(year, dirInvoices);
+        File dirMonth = driveService.findOrCreateFolder(month, dirYear);
 
         SummaryContextHolder.get()
                 .setMonthFolder("%s/%s/%s".formatted(properties.getBaseFolderName(), year, month));
-        return dir_month;
+        return dirMonth;
     }
 
     private void getAndUploadInvoices(LocalDate fromDate, LocalDate toDate, File targetFolder) {

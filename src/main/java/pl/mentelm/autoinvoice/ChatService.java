@@ -9,13 +9,11 @@ import pl.mentelm.autoinvoice.configuration.AutoInvoiceConfigurationProperties;
 import pl.mentelm.autoinvoice.summary.Summary;
 import pl.mentelm.autoinvoice.summary.SummaryContextHolder;
 
-import java.math.BigDecimal;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @Service
@@ -44,7 +42,7 @@ public class ChatService {
     }
 
     private String generateChatMessage() {
-        Summary summary = SummaryContextHolder.get();
+        Summary summary = SummaryContextHolder.getAndRemove();
         return """
                AutoInvoice run performed in %s seconds.
                %s -> %s

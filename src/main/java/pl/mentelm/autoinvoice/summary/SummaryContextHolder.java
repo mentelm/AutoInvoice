@@ -1,22 +1,31 @@
 package pl.mentelm.autoinvoice.summary;
 
-public abstract class SummaryContextHolder {
+import lombok.experimental.UtilityClass;
 
-    private final static ThreadLocal<Summary> builder = new ThreadLocal<>();
+@UtilityClass
+public class SummaryContextHolder {
 
-    public static void initialize() {
+    private final ThreadLocal<Summary> builder = new ThreadLocal<>();
+
+    public void initialize() {
         builder.set(new Summary());
     }
 
-    public static void setMessageCount(int count) {
+    public void setMessageCount(int count) {
         builder.get().setMessageCount(count);
     }
 
-    public static void incrementAttachments() {
+    public void incrementAttachments() {
         builder.get().getAttachmentCount().incrementAndGet();
     }
 
-    public static Summary get() {
+    public Summary get() {
         return builder.get();
+    }
+
+    public Summary getAndRemove() {
+        Summary summary = builder.get();
+        builder.remove();
+        return summary;
     }
 }
