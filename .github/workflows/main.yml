@@ -29,3 +29,5 @@ jobs:
           autoinvoice.target-email: ${{ secrets.TARGET_EMAIL }}
           autoinvoice.credentials-b64: ${{ secrets.GOOGLE_CREDENTIALS }}
           autoinvoice.chat-webhook: ${{ secrets.CHAT_WEBHOOK }}
+          fakturownia.base-domain: ${{ secrets.FAKTUROWNIA_BASE_URL }}
+          fakturownia.token: ${{ secrets.FAKTUROWNIA_TOKEN }}

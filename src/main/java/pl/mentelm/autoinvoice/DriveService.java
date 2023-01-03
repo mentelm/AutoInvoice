@@ -41,6 +41,7 @@ public class DriveService {
         File fileMetadata = new File();
         fileMetadata.setName(data.filename());
         fileMetadata.setParents(List.of(folder.getId()));
+        fileMetadata.setMimeType(data.type());
         InputStreamContent mediaContent = new InputStreamContent(data.type(), new ByteArrayInputStream(data.content()));
 
         File file = drive.files().create(fileMetadata, mediaContent)
