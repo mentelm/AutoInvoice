@@ -7,11 +7,12 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 @Data
 public class Summary {
-    String monthFolder;
-    String sharingUrl;
-    int messageCount;
-    AtomicInteger attachmentCount = new AtomicInteger();
-    long runTimeMillis;
-    LocalDate startDate;
-    LocalDate endDate;
+    private String monthFolder;
+    private String sharingUrl;
+    private int messageCount;
+    private AtomicInteger attachmentCount = new AtomicInteger();
+    private AtomicInteger outgoingInvoiceCount = new AtomicInteger();
+    private long runTimeMillis;
+    private LocalDate startDate;
+    private LocalDate endDate;
 }

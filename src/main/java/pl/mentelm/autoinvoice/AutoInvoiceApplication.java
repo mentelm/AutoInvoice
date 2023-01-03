@@ -38,17 +38,17 @@ public class AutoInvoiceApplication {
     private final AutoInvoiceConfigurationProperties properties;
     private final ChatService chatService;
 
-    public void run() {
+    public void runAndSummarize() {
         SummaryContextHolder.initialize();
         StopWatch stopWatch = new StopWatch();
         stopWatch.start();
-        internalRun();
+        run();
         stopWatch.stop();
         SummaryContextHolder.get().setRunTimeMillis(stopWatch.getLastTaskInfo().getTimeMillis());
         chatService.sendChatNotification();
     }
 
-    private void internalRun() {
+    private void run() {
         LocalDate today = LocalDate.now(Clock.systemDefaultZone());
         LocalDate startOfPreviousMonth = today.withDayOfMonth(1).minus(1, ChronoUnit.MONTHS);
         LocalDate startOfCurrentMonth = today.withDayOfMonth(1);
@@ -88,7 +88,11 @@ public class AutoInvoiceApplication {
         List<Message> messages = gmailService.getMessagesForLabel(properties.getWantedLabel(), fromDate, toDate);
         messages.stream()
                 .flatMap(gmailService::getAttachments)
-                .map(att -> driveService.createFile(targetFolder, att))
+                .map(att -> {
+                    File uploadedAttachment = driveService.createFile(targetFolder, att);
+                    SummaryContextHolder.incrementAttachments();
+                    return uploadedAttachment;
+                })
                 .forEach(driveService::setShared);
 
         File fakturowniaFolder = driveService.findOrCreateFolder("fakturownia", targetFolder);
@@ -101,6 +105,8 @@ public class AutoInvoiceApplication {
                     .map(fakturowniaService::downloadInvoice)
                     .map(inv -> driveService.createFile(fakturowniaFolder, inv))
                     .forEach(driveService::setShared);
+            SummaryContextHolder.addOutgoingInvoices(invoices.size());
+
             lastPageSize = invoices.size();
         } while (lastPageSize == PAGE_SIZE);
         driveService.setShared(fakturowniaFolder);

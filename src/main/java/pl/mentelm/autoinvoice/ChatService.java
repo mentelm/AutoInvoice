@@ -46,12 +46,14 @@ public class ChatService {
         return """
                AutoInvoice run performed in %s seconds.
                %s -> %s
-               Found %s attachments in %d messages
+               Found %d attachments in %d messages
+               %d outgoing invoices copied from Fakturownia
                Uploaded to <%s|folder %s>
                """.formatted(
                 toSeconds(summary.getRunTimeMillis()),
                 summary.getStartDate(), summary.getEndDate(),
-                summary.getAttachmentCount().toString(), summary.getMessageCount(),
+                summary.getAttachmentCount().intValue(), summary.getMessageCount(),
+                summary.getOutgoingInvoiceCount().intValue(),
                 summary.getSharingUrl(), summary.getMonthFolder()
         );
     }

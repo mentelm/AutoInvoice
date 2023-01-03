@@ -19,6 +19,10 @@ public class SummaryContextHolder {
         builder.get().getAttachmentCount().incrementAndGet();
     }
 
+    public void addOutgoingInvoices(int countToAdd) {
+        builder.get().getOutgoingInvoiceCount().addAndGet(countToAdd);
+    }
+
     public Summary get() {
         return builder.get();
     }

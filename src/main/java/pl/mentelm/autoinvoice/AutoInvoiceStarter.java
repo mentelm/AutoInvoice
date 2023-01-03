@@ -12,6 +12,6 @@ public class AutoInvoiceStarter {
     public static void main(String[] args) {
         ApplicationContext ctx = SpringApplication.run(AutoInvoiceStarter.class, args);
 
-        ctx.getBean(AutoInvoiceApplication.class).run();
+        ctx.getBean(AutoInvoiceApplication.class).runAndSummarize();
     }
 }

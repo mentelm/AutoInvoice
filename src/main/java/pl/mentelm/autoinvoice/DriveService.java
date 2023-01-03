@@ -9,7 +9,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import pl.mentelm.autoinvoice.summary.SummaryContextHolder;
 
 import java.io.ByteArrayInputStream;
 import java.util.List;
@@ -48,7 +47,6 @@ public class DriveService {
                 .setFields("id, parents")
                 .execute();
 
-        SummaryContextHolder.incrementAttachments();
         log.info("File {} uploaded {}", data.filename(), file.getId());
         return file;
     }
@@ -67,11 +65,11 @@ public class DriveService {
                 .setQ("'%s' in parents and name = '%s'".formatted(parentId, name))
                 .execute();
 
-        log.info("Following files found for name {} with parent {}: {}", name, parentId, result.getFiles().stream().map(File::getName).toList());
-
         if (result.getFiles().isEmpty()) {
             return createFolder(name, parentId);
         }
+
+        log.info("Following files found for name {} with parent {}: {}", name, parentId, result.getFiles().stream().map(File::getName).toList());
         return result.getFiles().get(0);
     }
 
