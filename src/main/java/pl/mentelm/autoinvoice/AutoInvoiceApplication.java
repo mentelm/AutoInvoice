@@ -6,17 +6,16 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StopWatch;
 import pl.mentelm.autoinvoice.configuration.AutoInvoiceConfigurationProperties;
 import pl.mentelm.autoinvoice.fakturownia.FakturowniaService;
 import pl.mentelm.autoinvoice.fakturownia.InvoiceInfo;
 import pl.mentelm.autoinvoice.fakturownia.InvoicePeriod;
+import pl.mentelm.autoinvoice.summary.Summarize;
 import pl.mentelm.autoinvoice.summary.SummaryContextHolder;
 
 import java.time.Clock;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 @Slf4j
@@ -36,21 +35,11 @@ public class AutoInvoiceApplication {
     private final FakturowniaService fakturowniaService;
     private final EmailTemplateService emailTemplateService;
     private final AutoInvoiceConfigurationProperties properties;
-    private final ChatService chatService;
 
-    public void runAndSummarize() {
-        SummaryContextHolder.initialize();
-        StopWatch stopWatch = new StopWatch();
-        stopWatch.start();
-        run();
-        stopWatch.stop();
-        SummaryContextHolder.get().setRunTimeMillis(stopWatch.getLastTaskInfo().getTimeMillis());
-        chatService.sendChatNotification();
-    }
-
-    private void run() {
+    @Summarize
+    public void run() {
         LocalDate today = LocalDate.now(Clock.systemDefaultZone());
-        LocalDate startOfPreviousMonth = today.withDayOfMonth(1).minus(1, ChronoUnit.MONTHS);
+        LocalDate startOfPreviousMonth = today.withDayOfMonth(1).minusMonths(1);
         LocalDate startOfCurrentMonth = today.withDayOfMonth(1);
 
         SummaryContextHolder.get().setStartDate(startOfPreviousMonth);

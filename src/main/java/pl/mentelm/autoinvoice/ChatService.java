@@ -6,8 +6,6 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import pl.mentelm.autoinvoice.configuration.AutoInvoiceConfigurationProperties;
-import pl.mentelm.autoinvoice.summary.Summary;
-import pl.mentelm.autoinvoice.summary.SummaryContextHolder;
 
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -25,10 +23,8 @@ public class ChatService {
     private final HttpClient client = HttpClient.newHttpClient();
 
     @SneakyThrows
-    public void sendChatNotification() {
-        String message = jsonFactory.toString(Map.of(
-                "text", generateChatMessage()
-        ));
+    public void sendChatNotification(String content) {
+        String message = jsonFactory.toString(Map.of("text", content));
 
         HttpRequest request = HttpRequest.newBuilder(URI.create(properties.getChatWebhook()))
                 .header("accept", "application/json; charset=UTF-8")
@@ -39,26 +35,5 @@ public class ChatService {
         if (response.statusCode() >= 300) {
             log.warn("Unexpected status code {}!\n{}", response.statusCode(), response.body());
         }
-    }
-
-    private String generateChatMessage() {
-        Summary summary = SummaryContextHolder.getAndRemove();
-        return """
-               AutoInvoice run performed in %s seconds.
-               %s -> %s
-               Found %d attachments in %d messages
-               %d outgoing invoices copied from Fakturownia
-               Uploaded to <%s|folder %s>
-               """.formatted(
-                toSeconds(summary.getRunTimeMillis()),
-                summary.getStartDate(), summary.getEndDate(),
-                summary.getAttachmentCount().intValue(), summary.getMessageCount(),
-                summary.getOutgoingInvoiceCount().intValue(),
-                summary.getSharingUrl(), summary.getMonthFolder()
-        );
-    }
-
-    private double toSeconds(double millis) {
-        return millis / 1000;
     }
 }
