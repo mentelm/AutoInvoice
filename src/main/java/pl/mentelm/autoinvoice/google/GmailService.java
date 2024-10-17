@@ -1,4 +1,4 @@
-package pl.mentelm.autoinvoice;
+package pl.mentelm.autoinvoice.google;
 
 import com.google.api.services.gmail.Gmail;
 import com.google.api.services.gmail.model.Message;
@@ -14,6 +14,7 @@ import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
+import pl.mentelm.autoinvoice.BinaryData;
 import pl.mentelm.autoinvoice.configuration.AutoInvoiceConfigurationProperties;
 import pl.mentelm.autoinvoice.summary.SummaryContextHolder;
 
