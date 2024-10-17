@@ -1,7 +1,9 @@
 package pl.mentelm.autoinvoice.fakturownia;
 
+import lombok.RequiredArgsConstructor;
+
+@RequiredArgsConstructor
 public enum InvoicePeriod {
-    THIS_MONTH,
     LAST_MONTH;
 
     public String getParamText() {

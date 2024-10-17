@@ -1,4 +1,4 @@
-package pl.mentelm.autoinvoice;
+package pl.mentelm.autoinvoice.google;
 
 import com.google.api.client.http.InputStreamContent;
 import com.google.api.services.drive.Drive;
@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import pl.mentelm.autoinvoice.BinaryData;
 
 import java.io.ByteArrayInputStream;
 import java.util.List;

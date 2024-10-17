@@ -8,6 +8,7 @@ import pl.mentelm.autoinvoice.BinaryData;
 import pl.mentelm.autoinvoice.configuration.FakturowniaConfigurationProperties;
 
 import java.util.List;
+import java.util.stream.Stream;
 
 @Slf4j
 @Service
@@ -21,12 +22,12 @@ public class FakturowniaService {
         return fakturowniaApi.getInvoices(period.getParamText(), page, pageSize, properties.getToken());
     }
 
-    public BinaryData downloadInvoice(InvoiceInfo invoiceInfo) {
+    public Stream<BinaryData> downloadInvoice(InvoiceInfo invoiceInfo) {
         log.info("Downloading invoice {} [{}]", invoiceInfo.getNumber(), invoiceInfo.getId());
         byte[] invoiceData = fakturowniaApi.downloadPdf(invoiceInfo.getId(), properties.getToken());
-        return new BinaryData(
+        return Stream.of(new BinaryData(
                 invoiceInfo.getNumber().replace("/", "_").concat(".pdf"),
                 MediaType.APPLICATION_PDF_VALUE,
-                invoiceData);
+                invoiceData));
     }
 }

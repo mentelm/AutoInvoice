@@ -1,4 +1,4 @@
-package pl.mentelm.autoinvoice;
+package pl.mentelm.autoinvoice.google;
 
 import com.google.api.client.json.JsonFactory;
 import lombok.RequiredArgsConstructor;

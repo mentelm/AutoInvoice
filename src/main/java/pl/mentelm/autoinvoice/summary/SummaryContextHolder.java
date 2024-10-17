@@ -15,12 +15,12 @@ public class SummaryContextHolder {
         builder.get().setMessageCount(count);
     }
 
-    public void incrementAttachments() {
-        builder.get().getAttachmentCount().incrementAndGet();
+    public void addAttachments(int count) {
+        builder.get().getAttachmentCount().addAndGet(count);
     }
 
-    public void addOutgoingInvoices(int countToAdd) {
-        builder.get().getOutgoingInvoiceCount().addAndGet(countToAdd);
+    public void addOutgoingInvoices(int count) {
+        builder.get().getOutgoingInvoiceCount().addAndGet(count);
     }
 
     public Summary get() {
